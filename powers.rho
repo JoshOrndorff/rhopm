@@ -1,0 +1,16 @@
+/// import ./square |
+/// import ./fourth |
+
+new powers, nCh, squareCh, fourthCh, stdout(`rho:io:stdout`) in {
+  // export+{powers} |
+
+  contract powers(@n /\ Int) = {
+    nCh!(n) |
+    square!(n, *squareCh) |
+    fourth!(n, *fourthCh) |
+
+    for(@n <- nCh; @square <- squareCh; @fourth <- fourthCh){
+      stdout!("${1} squared is ${2}, and cubed is ${4}." %% {"1": n, "2": square, "4":fourth})
+    }
+  }
+}

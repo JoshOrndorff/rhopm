@@ -1,0 +1,4 @@
+new insertArbitrary(`rho:registry:insertArbitrary`) in {
+  insertArbitrary!(XXXX, "YYYY")
+}
+|

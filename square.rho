@@ -1,0 +1,7 @@
+new square in {
+  // export+{square} |
+
+  contract square(@n /\ Int, return) = {
+    return!(n * n)
+  }
+}

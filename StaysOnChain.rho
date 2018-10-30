@@ -1,0 +1,98 @@
+// Written by Mike Stay
+// Here for reference purposes
+// I may include a something like this eventually.
+// But I like the idea of code hash being the unique identifier
+
+new mapStore, PackageManager, register(`rho:registry:insertArbitrary`) in {
+  // Create the map of contract versions
+  mapStore!({}) |
+  // Store the PackageManager at a unique id.  If you want to send the id to
+  //   another contract, replace Nil with *<contract name>.
+  register!(bundle+{*PackageManager}, Nil) |
+
+  // Claim a new package name
+  contract PackageManager(@"newPackage", @packageName, return) = {
+    for (@map <- mapStore) {
+      if (map.get(packageName)) {
+        mapStore!(map) |
+        return!((false, "A package with that name already exists."))
+      } else {
+        new ownerToken in {
+          mapStore!(map.set(packageName, {"ownerToken": *ownerToken, "versionMap": {}})) |
+          return!((true, *ownerToken))
+        }
+      }
+    }
+  } |
+
+  // Release a new version of the package
+  contract PackageManager(@"setVersion", @packageName, @version, @value, @ownerToken, return) = {
+    for (@map <- mapStore) {
+      match map.get(packageName) {
+        Nil => {
+          mapStore!(map) |
+          return!((false, "No such package"))
+        }
+        (token, versionMap) => {
+          if (ownerToken != token) {
+            mapStore!(map) |
+            return!((false, "Token does not match"))
+          } else {
+            if (versionMap.get(version) != Nil) {
+              mapStore!(map) |
+              return!((false, "Version already exists"))
+            } else {
+              mapStore!(map.set(packageName, (ownerToken, versionMap.set(version, value)))) |
+              return!((true))
+            }
+          }
+        }
+        _ => {
+          mapStore!(map) |
+          return!((false, "Internal error!"))
+        }
+      }
+    }
+  } |
+
+  // Get an specific version of a package
+  contract PackageManager(@"getVersion", @packageName, @version, return) = {
+    // Should be a peek once that's available
+    for (@map <- mapStore) {
+      mapStore!(map) |
+      match map.get(packageName) {
+        Nil => {
+          return!((false, "No such package"))
+        }
+        (token, versionMap) => {
+          if (versionMap.get(version) == Nil) {
+            return!((false, "No such version"))
+          } else {
+            return!((true, versionMap.get(version)))
+          }
+        }
+        _ => {
+          return!((false, "Internal error!"))
+        }
+      }
+    }
+  } |
+
+  // Get the list of all versions of the package
+  contract PackageManager(@"listVersions", @packageName, return) = {
+    for (@map <- mapStore) {
+      mapStore!(map) |
+      match map.get(packageName) {
+        Nil => {
+          return!((false, "No such package"))
+        }
+        (token, versionMap) => {
+          return!((true, versionMap.keys()))
+        }
+        _ => {
+          return!((false, "Internal error!"))
+        }
+      }
+    }
+  }
+}

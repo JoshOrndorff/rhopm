@@ -1,0 +1,4 @@
+new lookup(`rho:registry:lookup`) in {
+  lookup!(XXXX, "YYYY")
+}
+|

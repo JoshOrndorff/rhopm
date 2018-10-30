@@ -1,0 +1,21 @@
+{
+  "name": "rhopm",
+  "version": "0.0.1",
+  "description": "Rholang Package Manager",
+  "main": "rhopm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "rholang",
+    "rchain",
+    "package",
+    "manager"
+  ],
+  "author": "Joshy Orndorff",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "grpc": "^1.15.1",
+    "rchain-api": "^0.7.1-beta.2"
+  }
+}
