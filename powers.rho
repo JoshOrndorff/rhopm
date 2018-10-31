@@ -10,7 +10,12 @@ new powers, nCh, squareCh, fourthCh, stdout(`rho:io:stdout`) in {
     fourth!(n, *fourthCh) |
 
     for(@n <- nCh; @square <- squareCh; @fourth <- fourthCh){
-      stdout!("${1} squared is ${2}, and cubed is ${4}." %% {"1": n, "2": square, "4":fourth})
+      stdout!("${1} squared is ${2}, and fourthed is ${4}." %% {"1": n, "2": square, "4":fourth})
     }
   }
+  |
+
+  // Call it
+  powers!(3) |
+  stdout!("Running powers code")
 }

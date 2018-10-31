@@ -5,7 +5,7 @@ const { readFileSync } = require('fs');
 // TODO parse these options with docopt
 // For now assume this command:
 // rhopm deploy fourth.rho
-const deployPath = "./fourth.rho";
+const deployPath = "./powers.rho";
 
 // Setup globals
 const exportTemplate = readFileSync('exportTemplate.rho', 'utf8');
@@ -108,9 +108,10 @@ function deployAll(toDeploy, fullGraph, deployedURIs, myNode) {
     deployedURIs[hash] = {};
     console.log("started deploy of " + fullGraph[hash].path);
   }
-
+  console.log("about to return the deploy metapromise");
   // Once all the deploys are done, create a block and wait for uris
   return Promise.all(deployPromises).then(() => {
+    console.log("All deploy promises completed");
     return myNode.createBlock();
   }).then( msg => {
     console.log(msg)
