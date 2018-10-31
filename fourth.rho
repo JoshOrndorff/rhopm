@@ -1,12 +1,12 @@
-/// import ./double |
+// import{./square.rho}[square]
 
 new fourth, intermediateCh in {
-  // export+{fourth} |
+  // export+{fourth}
 
   contract fourth(@n /\ Int, return) = {
     square!(n, *intermediateCh) |
     for(@n <- intermediateCh) {
-      square!(n, return)
+      square!(n, *return)
     }
   }
 }

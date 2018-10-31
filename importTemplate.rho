@@ -1,4 +1,6 @@
-new lookup(`rho:registry:lookup`) in {
-  lookup!(XXXX, "YYYY")
+new answerChan, lookup(`rho:registry:lookup`) in {
+  lookup!(`XXXX`, *answerChan) |
+  for( YYYY <- answerChan) {
+    ZZZZ
+  }
 }
-|

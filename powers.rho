@@ -1,8 +1,8 @@
-/// import ./square |
-/// import ./fourth |
+// import{./square.rho}[square]
+// import{./fourth.rho}[fourth]
 
 new powers, nCh, squareCh, fourthCh, stdout(`rho:io:stdout`) in {
-  // export+{powers} |
+  // export+{powers}
 
   contract powers(@n /\ Int) = {
     nCh!(n) |
