@@ -1,25 +1,11 @@
-new answerChan, lookup(`rho:registry:lookup`) in {
+new answerChan,
+    lookup(`rho:registry:lookup`),
+    stdout(`rho:io:stdout`) in {
   lookup!(`XXXX`, *answerChan) |
   for( YYYY <- answerChan) {
-    ZZZZ
+    match *YYYY {
+      Nil => stdout!("rhopm: ERROR: Failed to lookup YYYY in registry.")
+      _ => {ZZZZ}
+    }
   }
 }
-
-// TODO Why didn't this version work?
-/*
-new answerChan,
-lookup(`rho:registry:lookup`),
-stdout(`rho:io:stdout`) in {
-
-  lookup!(`XXXX`, *answerChan) |
-
-  for(@Nil <- answerChan) {
-    // TODO give an error back to the UI somehow
-    stdout!("rhopm: ERROR: Failed to lookup YYYY in registry.")
-  } |
-
-  for( YYYY /\ @{~Nil} <- answerChan) {
-    ZZZZ
-  }
-}
-*/

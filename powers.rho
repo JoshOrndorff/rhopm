@@ -14,7 +14,7 @@ new powers, nCh, squareCh, cubeCh, fourthCh, stdout(`rho:io:stdout`) in {
     fourth!(n, *fourthCh) |
 
     for(@n <- nCh; @square <- squareCh; @cube <- cubeCh; @fourth <- fourthCh){
-      stdout!("${1} squared is ${2}, and cubed is ${3}, and fourthed is ${4}." %% {"1": n, "2": square, "3": cube, "4":fourth})
+      stdout!("${1} squared is ${2}, cubed is ${3}, and fourthed is ${4}." %% {"1": n, "2": square, "3": cube, "4":fourth})
     }
   }
   |

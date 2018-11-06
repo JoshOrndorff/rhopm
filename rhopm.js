@@ -97,12 +97,12 @@ async function deployAll(toDeploy, fullGraph, deployedURIs, myNode) {
       let dependURI = deployedURIs[dependHash][dependName];
       term = importTemplate
               .replace("XXXX", dependURI)
-              .replace("YYYY", dependName)
+              .replace(/YYYY/g, dependName)
               .replace("ZZZZ", term);
     }
 
-    //console.log("About to deploy code:")
-    //console.log(term)
+    console.log("About to deploy code:")
+    console.log(term)
 
     // Now deploy it
     const deployData = {
