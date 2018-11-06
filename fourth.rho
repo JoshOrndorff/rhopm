@@ -1,11 +1,13 @@
 // import{./square.rho}[square]
 
-new fourth, intermediateCh in {
+new fourth, intermediateCh, stdout(`rho:io:stdout`) in {
   // export+{fourth}
 
   contract fourth(@n /\ Int, return) = {
+    stdout!("In fourth contract") |
     square!(n, *intermediateCh) |
     for(@n <- intermediateCh) {
+      stdout!("First Squaring received successfully.") |
       square!(n, *return)
     }
   }

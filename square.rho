@@ -1,7 +1,8 @@
-new square in {
+new square, stdout(`rho:io:stdout`) in {
   // export+{square}
 
   contract square(@n /\ Int, return) = {
+    stdout!("In square contract") |
     return!(n * n)
   }
 }

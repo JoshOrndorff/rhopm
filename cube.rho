@@ -1,0 +1,8 @@
+new cube, stdout(`rho:io:stdout`) in {
+  // export+{cube}
+
+  contract cube(@n /\ Int, return) = {
+    stdout!("In cube contract") |
+    return!(n * n * n)
+  }
+}
