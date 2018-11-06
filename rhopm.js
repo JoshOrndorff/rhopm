@@ -1,12 +1,25 @@
 const { RNode, simplifiedKeccak256Hash } = require('rchain-api');
 const grpc = require('grpc');
 const path = require('path');
+const { docopt } = require('docopt');
 const { readFileSync } = require('fs');
 
-// TODO parse these options with docopt
-// For now assume this command:
-// rhopm deploy fourth.rho
-const deployPath = "./exampleProject/powers.rho";
+// Setup docopt
+const usage = `
+Deploy packages and their dependencies to a target blockchain
+
+Usage:
+  main.js [options]
+
+Options:
+ --host STRING          The hostname or IPv4 address of the node
+                        [default: localhost]
+ --port INT             The tcp port of the nodes gRPC service
+                        [default: 40401]
+ --package STRING       Path to a package to deploy
+ -h --help              show usage
+`;
+const cli = docopt(usage, { argv: process.argv.slice(2) });
 
 // Setup globals
 const exportTemplate = readFileSync(path.join(__dirname, 'exportTemplate.rho'), 'utf8');
@@ -14,13 +27,13 @@ const importTemplate = readFileSync(path.join(__dirname, 'importTemplate.rho'), 
 const deployedURIs = {}; // A map from hash-name combos to registry URIs
                          // TODO save this one to disk afterward.
                          // TODO save this to the blockchain using something like Stay's code
-const myNode = RNode(grpc, { host: "localhost", port: 40401 });
+const myNode = RNode(grpc, { host: cli['--host'], port: cli['--port'] });
 
 
 // Build dependency graph starting from a single deploy, and empty graph
 //TODO take a parameter for whether to build the entire thing, or trunctace
 // when reaching package nodes that are already deployed.
-let dependencyGraph = buildGraph(deployPath);
+let dependencyGraph = buildGraph(cli['--package']);
 //console.log("Final Dependency Graph:");
 //console.log(dependencyGraph);
 
