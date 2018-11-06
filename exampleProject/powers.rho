@@ -1,6 +1,6 @@
-// import{./square.rho}[square]
-// import{./fourth.rho}[fourth]
-// import{./cube.rho}[cube]
+// import{./math/square.rho}[square]
+// import{./math/cube.rho}[cube]
+// import{./math/fourth.rho}[fourth]
 
 new powers, nCh, squareCh, cubeCh, fourthCh, stdout(`rho:io:stdout`) in {
   // export+{powers}

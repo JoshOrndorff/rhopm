@@ -1,15 +1,16 @@
 const { RNode, simplifiedKeccak256Hash } = require('rchain-api');
 const grpc = require('grpc');
+const path = require('path');
 const { readFileSync } = require('fs');
 
 // TODO parse these options with docopt
 // For now assume this command:
 // rhopm deploy fourth.rho
-const deployPath = "./powers.rho";
+const deployPath = "./exampleProject/powers.rho";
 
 // Setup globals
-const exportTemplate = readFileSync('exportTemplate.rho', 'utf8');
-const importTemplate = readFileSync('importTemplate.rho', 'utf8');
+const exportTemplate = readFileSync(path.join(__dirname, 'exportTemplate.rho'), 'utf8');
+const importTemplate = readFileSync(path.join(__dirname, 'importTemplate.rho'), 'utf8');
 const deployedURIs = {}; // A map from hash-name combos to registry URIs
                          // TODO save this one to disk afterward.
                          // TODO save this to the blockchain using something like Stay's code
@@ -164,7 +165,7 @@ async function deployAll(toDeploy, fullGraph, deployedURIs, myNode) {
  */
 function buildGraph(primaryDeployPath) {
 
-  let graph = {};
+  const graph = {};
   buildRecursive(primaryDeployPath);
   return graph;
 
@@ -238,9 +239,10 @@ function buildGraph(primaryDeployPath) {
     graph[hash].code = lines.join('\n');
     // Recurse through each dependency
     //TODO figure out what to do for dependencies that are specified by hash
+    const relativeDirectory = path.dirname(deployPath);
     for (let dependName in dependsPaths) {
-      let dependPath = dependsPaths[dependName];
-      let childHash = buildRecursive(dependPath);
+      const relativeDependPath = path.join(relativeDirectory, dependsPaths[dependName]);
+      const childHash = buildRecursive(relativeDependPath);
       graph[hash].depends[dependName] = childHash;
     }
     return hash;
