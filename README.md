@@ -1,21 +1,32 @@
 # Rholang Package Manager
 
-This project is in its _very_ early stages of development. It strives to allow a modular package ecosystem for rholang programmers. Through `import` and `export` syntax embedded in rholang comments, the programmer can signal the package managers what dependencies are required, where to find those dependencies, and what contracts are made available. The package manager dynamically calculates the dependency graph, deploys all dependencies in as few blocks as possible, and
+This project is in its very early stages of development. It strives to facilitate a modular package ecosystem for rholang programmers.
+
+Through `import` and `export` syntax embedded in rholang comments, programmers signal the package manager what dependencies are required, and where to find those dependencies. The package manager dynamically calculates the dependency graph and deploys all dependencies in as few blocks as possible.
+
+## Syntax
+To export a name (likely a contract) use one of these syntaxes
+ * `// export+{name}` for a write-only bundle of name
+ * `// export-{fourth}` for a read-only bundle of name
+ * `// export0{fourth}` for a no-read-write bundle of name
+ * `// export{fourth}` for a read-write bundle of name
+
+ To import a name use this syntax
+ * `// import{./file.rho}[name]` to import name from file.rho
 
 ## Usage
 * Start an RNode running casper
 * Clone this repo
-* cd into the directory
-* run the example deploy `node rhopm.js powers.rho`
-* Figure out why the last deploy promise resolves right before the last round. grrrr.
+* Write a project using the syntax above
+* Deploy your project with `node <path to rhopm.js> --package <path to project>`
 
-# Missing features
+## Missing Features
 * Store a record of deployed code to disk to avoid re-deployments
 * Store a record of deployed code on chain so common libraries can be taken for granted
 * Lookup import names in the registry concurrently
 * Any semblance of error or edge case handling
 
-# Author and License
+## Author and License
 
 Written by Joshy Orndorff
 
