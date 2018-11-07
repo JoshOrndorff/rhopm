@@ -132,8 +132,6 @@ async function deployAll(toDeploy, fullGraph, deployedURIs, myNode) {
     let ready = true;
     for (let depend of Object.keys(fullGraph[hash].depends)) {
       let source = fullGraph[hash].depends[depend];
-      //PROBLEM!!!!!!!!! Fourth should have a dependency on square
-      // and square should not yet be in deployedURIs
       if (!deployedURIs.hasOwnProperty(source)) {
         ready = false;
         break;
@@ -174,16 +172,18 @@ async function deployAll(toDeploy, fullGraph, deployedURIs, myNode) {
     console.log("started deploy of " + fullGraph[hash].path);
   }
 
-  // Once all the deploys are done, create a block and update the deployedURIs
+  // Once all the deploys are done, create a block
   await Promise.all(deployPromises);
-  console.log("All deploy promises completed");
   const proposeMessage = await myNode.createBlock();
   console.log(proposeMessage);
-  deployedHashes.map((hash) => { deployedURIs[hash] = {} });
 
   // Lookup all the just-deployed URIs and put them in deployed map
   let uriPromises = [];
   for (let hash of deployedHashes) {
+    // If the deployed thing actually has exports, put them in the directory
+    if (fullGraph[hash].exports.length > 0) {
+      deployedURIs[hash] = {};
+    }
     for (let name of fullGraph[hash].exports) {
       let fullName = hash + name;
       let uriPromise = myNode.listenForDataAtPublicName(fullName);
@@ -241,6 +241,11 @@ function buildGraph(primaryDeployPath, directory={}) {
 
     // Check whether it's already in the graph or the directory
     const hash = simplifiedKeccak256Hash(rawCode);
+    //TODO the first condition ensures that the explicitly requested package is always
+    // (re)deployed so that any "main program" code is run.
+    // Maybe this just enables sloppy rholang coding
+    // This conditiona also wserves as a workaround for proposing an emtpy block
+    // https://github.com/rchain-community/rchain-api/issues/13
     if ((deployPath !== primaryDeployPath) && (graph.hasOwnProperty(hash) || directory.hasOwnProperty(hash))) {
       return hash;
     }
