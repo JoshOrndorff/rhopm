@@ -2,7 +2,7 @@ const { RNode, simplifiedKeccak256Hash } = require('rchain-api');
 const grpc = require('grpc');
 const path = require('path');
 const { docopt } = require('docopt');
-const { readFileSync } = require('fs');
+const { readFileSync, writeFileSync } = require('fs');
 
 // Setup docopt
 const usage = `
@@ -12,45 +12,94 @@ Usage:
   main.js [options]
 
 Options:
- --host STRING          The hostname or IPv4 address of the node
-                        [default: localhost]
- --port INT             The tcp port of the nodes gRPC service
-                        [default: 40401]
- --package STRING       Path to a package to deploy
- -h --help              show usage
+ --host STRING               The hostname or IPv4 address of the node
+                             [default: localhost]
+ --port INT                  The tcp port of the nodes gRPC service
+                             [default: 40401]
+ --package STRING            Path to a package to deploy
+ --directory-file STRING     Path to a file containing directory of deployed URIs
+ --directory-contract URI    URI of onchain directory of deployed URIs
+ -h --help                   show usage
 `;
 const cli = docopt(usage, { argv: process.argv.slice(2) });
 
 // Setup globals
 const exportTemplate = readFileSync(path.join(__dirname, 'exportTemplate.rho'), 'utf8');
 const importTemplate = readFileSync(path.join(__dirname, 'importTemplate.rho'), 'utf8');
-const deployedURIs = {}; // A map from hash-name combos to registry URIs
-                         // TODO save this one to disk afterward.
-                         // TODO save this to the blockchain using something like Stay's code
+const { loadURIs, saveURIs } =
+  makeLoadSave(cli['--directory-file'], cli['--directory-contract']);
+const deployedURIs = loadURIs();
 const myNode = RNode(grpc, { host: cli['--host'], port: cli['--port'] });
 
 
 // Build dependency graph starting from a single deploy, and empty graph
 //TODO take a parameter for whether to build the entire thing, or trunctace
 // when reaching package nodes that are already deployed.
-let dependencyGraph = buildGraph(cli['--package']);
+let dependencyGraph = buildGraph(cli['--package'], deployedURIs);
 //console.log("Final Dependency Graph:");
 //console.log(dependencyGraph);
 
 // Traverse dependency graph, deploying as necessary
+//TODO figure out how to use await here
 let toDeploy = new Set(Object.keys(dependencyGraph));
 deployAll(toDeploy, dependencyGraph, deployedURIs, myNode).then(() => {
+
   console.log("\n\nFinal Deploy locations:");
   console.log(deployedURIs);
+
+  // Save directory to file (or, in the future, an on-chain contract)
+  saveURIs(deployedURIs);
 });
 
-
-//TODO Update .rhopm.json file (so far its all in memory)
 
 
 
 
 /////////////// END MAIN //////////////////////
+
+
+/**
+ * Creates a functions to load and save the deployment directory to file or,
+ * in the future blockchain/
+ * @param file Path to a directory file to keep updated
+ * @param contract URI of a directory contract to keep updated
+ * @return An boject containing loadURIs and saveURIs functions
+ */
+function makeLoadSave(file, contract) {
+
+  // No directory specified. State is totally transient
+  if (file == undefined && contract == undefined) {
+    return {
+      loadURIs: () => { return {} },
+      saveURIs: () => {
+        console.warn("Deployment directory not saved. No file or contract supplied.")
+      },
+    };
+  }
+
+  if (contract) {
+    console.warn("Directory contracts not yet supported. Ignoring supplied URI.");
+  }
+
+  function loadURIs() {
+    try {
+      return require(path.join(__dirname, file));
+    }
+    catch {
+      console.warn(`Failed to read file ${file}. Starting with blank state.`);
+      return {};
+    }
+  }
+
+  function saveURIs(newDirectoryState) {
+    writeFileSync(file, JSON.stringify(newDirectoryState));
+  }
+
+  return { loadURIs, saveURIs };
+}
+
+
+
 
 /**
  * Deploys all code in toDeploy in as few blocks as possible
@@ -78,12 +127,6 @@ async function deployAll(toDeploy, fullGraph, deployedURIs, myNode) {
   const deployPromises = [];
   const deployedHashes = [];
   for (let hash of toDeploy) {
-
-    // If it's already deployed, call it done
-    if (deployedURIs.hasOwnProperty(hash)) {
-      toDeploy.delete(hash);
-      continue;
-    }
 
     // If it still has unmet depends, skip it.
     let ready = true;
@@ -115,8 +158,8 @@ async function deployAll(toDeploy, fullGraph, deployedURIs, myNode) {
               .replace("ZZZZ", term);
     }
 
-    console.log("About to deploy code:")
-    console.log(term)
+    //console.log("About to deploy code:")
+    //console.log(term)
 
     // Now deploy it
     const deployData = {
@@ -174,10 +217,12 @@ async function deployAll(toDeploy, fullGraph, deployedURIs, myNode) {
  * Calculates dependency graph for given deploy.
  * Assumes imports are in the widest scope (listed at the beginning of the file).
  * @param deployPath String representing a module to deploy
+ * @param directory A directory of code to be considered already deployed
  * @return The completed graph
  */
-function buildGraph(primaryDeployPath) {
+function buildGraph(primaryDeployPath, directory={}) {
 
+  // Calculate the portion of the dependency graph that needs to be deployed
   const graph = {};
   buildRecursive(primaryDeployPath);
   return graph;
@@ -194,9 +239,9 @@ function buildGraph(primaryDeployPath) {
     // Read package's contents
     const rawCode = readFileSync(deployPath, 'utf8');
 
-    // Hash and check whether it's already in the graph
+    // Check whether it's already in the graph or the directory
     const hash = simplifiedKeccak256Hash(rawCode);
-    if (graph.hasOwnProperty(hash)) {
+    if ((deployPath !== primaryDeployPath) && (graph.hasOwnProperty(hash) || directory.hasOwnProperty(hash))) {
       return hash;
     }
 
