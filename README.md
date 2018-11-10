@@ -28,6 +28,7 @@ To export a name (likely a contract) use one of these syntaxes
 * Store a record of deployed code on chain so common libraries can be taken for granted
 * Lookup import names in the registry concurrently
 * Any semblance of error or edge case handling
+* Make this a global-friendly package https://ourcodeworld.com/articles/read/393/how-to-create-a-global-module-for-node-js-properly
 
 ## Author and License
 
