@@ -12,7 +12,7 @@ The package manager calculates this graph, deploys the dependencies in the corre
 
 ## Basic Usage
 
-Spin up a node with casper. That isn't trivial atm, but check out [nth-caller](https://github.com/JoshOrndorff/nth-caller-game) and its [npm run fresh](https://github.com/JoshOrndorff/nth-caller-game/blob/master/package.json#L8) for one way to do it.
+Spin up a node with casper. I recommend [freshr](https://github.com/JoshOrndorff/freshr) (`npm install -g freshr`)
 
 To deploy the code execute `node rhopm.js --package powers.rho`
 

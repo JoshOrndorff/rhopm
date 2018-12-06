@@ -18,8 +18,8 @@ To export a name (likely a contract) use one of these syntaxes
  * `// import{./file.rho}[name]` to import name from file.rho
 
 ## Usage
-* Start an RNode running casper
-* Clone this repo
+* Start an RNode running casper. I recommend [freshr](https://github.com/JoshOrndorff/freshr). `npm install -g freshr`
+* Clone this repo `git clone https://github.com/JoshOrndorff/rhopm`
 * Write a project using the syntax above
 * Deploy your project with `node <path to rhopm.js> --package <path to project>`
 
