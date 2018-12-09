@@ -5,7 +5,7 @@ This project is in its very early stages of development. It strives to facilitat
 Through `import` and `export` syntax embedded in rholang comments, programmers signal the package manager what dependencies are required, and where to find those dependencies. The package manager dynamically calculates the dependency graph and deploys all dependencies in as few blocks as possible.
 
 ## Example
-It is probably easiest to see how rhopm works by checking out the [example project](exampleProject/README.md)
+It is probably easiest to see how rhopm works by checking out the [example project](exampleProject/README.md) or watching me [demonstrate it](https://youtu.be/V4r97WZfezw?t=2894).
 
 ## Syntax
 To export a name (likely a contract) use one of these syntaxes

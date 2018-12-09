@@ -1,6 +1,6 @@
 # Powers Example Project
 
-This example project calculates the 3<sup>2</sup>, 3<sup>3</sup>, and 3<sup>4</sup>. It is pretty basic rholang, but it illustrates the power of rhopm.
+This example project calculates the 3<sup>2</sup>, 3<sup>3</sup>, and 3<sup>4</sup>. It is pretty basic rholang, but it illustrates the power of rhopm. Watch a [video demonstration](https://youtu.be/V4r97WZfezw?t=2894).
 
 ## Dependency Structure
 
